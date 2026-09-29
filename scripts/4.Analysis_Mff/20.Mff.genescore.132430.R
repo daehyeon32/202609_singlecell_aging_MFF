@@ -86,9 +86,9 @@ run.aging.mff.genescores <- function() {
   dotplot.point.stroke <- 1.2
   dotplot.na.text.size <- 4.5
   dotplot.p.cutoff <- 0.05  # Raw Wilcoxon p, not an FDR threshold.
-  # Red highlights the biologically expected aging direction.
-  # These two senescence-up signatures are expected to be higher in Old.
-  red.when.old.higher <- c("SaulSenMayo", "CoreScence_up")
+  # Display convention: positive scores / Old-minus-Young differences are red,
+  # except CoreScence_down, which uses the reversed color direction.
+  red.when.old.higher <- c("Hallmark_IFN_alpha", "GO_IFN_beta", "SaulSenMayo", "CoreScence_up")
   # Every cell is plotted and used in statistics; no Mff-positive-only selection.
   age.colors <- c(
     "1m" = "#1B9E77", "3m" = "#D95F02", "24m" = "#7570B3", "30m" = "#E6AB02"
@@ -1210,9 +1210,9 @@ run.aging.mff.genescores <- function() {
   notes <- notes[notes != "Difference dotplot: red=Old lower, black=Old higher, grey=equal means"]
   notes <- c(
     notes, "COLOR DIRECTION",
-    "Red marks the biologically expected direction; dot fill/open shape, not color, represents the raw-p cutoff",
-    "Age dotplot: SaulSenMayo/CoreScence_up use black=negative, white=zero, red=positive; all other signatures retain red=negative, white=zero, black=positive",
-    "Difference dotplot: SaulSenMayo/CoreScence_up use red=Old higher and black=Old lower; all other signatures retain red=Old lower and black=Old higher; grey=equal means"
+    "Color direction is a display convention; dot fill/open shape, not color, represents the raw-p cutoff",
+    "Age dotplot: Hallmark_IFN_alpha/GO_IFN_beta/SaulSenMayo/CoreScence_up use black=negative, white=zero, red=positive; CoreScence_down uses red=negative, white=zero, black=positive",
+    "Difference dotplot: Hallmark_IFN_alpha/GO_IFN_beta/SaulSenMayo/CoreScence_up use red=Old higher and black=Old lower; CoreScence_down uses red=Old lower and black=Old higher; grey=equal means"
   )
   writeLines(notes, file.path(output.base, "04.analysis_settings.txt"), useBytes = TRUE)
   cat("\nCompleted all four analysis families.\nOutput: ", output.base, "\n", sep = "")
