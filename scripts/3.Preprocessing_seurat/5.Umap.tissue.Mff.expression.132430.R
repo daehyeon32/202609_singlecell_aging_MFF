@@ -8,7 +8,8 @@
 run.mff.umap <- function() {
   # --------------------------- SETTINGS ---------------------------
   input.dir <- "/BiO/Live/dleogus32/202609Aging_MFF/Analysis/4.tissue_split"
-  output.dir <- file.path(input.dir, "Mff_expression_UMAP.132430")
+  output.dir <- "/BiO/Live/dleogus32/202609Aging_MFF/Analysis/11.Umap_Mff_expression"
+  dir.create(output.dir, recursive = TRUE, showWarnings = FALSE)
   tissues <- c("Heart", "Limb_Muscle")
   gene <- "Mff"
   assay <- "RNA"
