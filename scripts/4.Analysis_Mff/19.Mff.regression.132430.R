@@ -9,7 +9,7 @@ local({
   include.heart.and.aorta <- TRUE  # 첨부한 최신 Young/Old 코드와 동일한 조직 선택
   age.order <- c(1, 3, 24, 30)
   analysis.ages <- list(selected_4ages = c(1, 3, 24, 30))
-  analysis.labels <- c(selected_4ages = "Selected ages: 1, 3, 18, 30 months")
+  analysis.labels <- c(selected_4ages = "Selected ages: 1, 3, 24, 30 months")
   line.colors <- c(selected_4ages = "#3C5488")
   age.colors <- setNames(c("#1B9E77", "#D95F02", "#7570B3", "#E6AB02"), as.character(age.order))
   min.cells.per.mouse.celltype <- 1L
@@ -181,7 +181,7 @@ local({
   needed <- c(tissue.column, "age", "mouse.id", "cell_ontology_class")
   if(!all(needed %in% colnames(mmf.rds@meta.data))){stop("Missing metadata: ", paste(setdiff(needed, colnames(mmf.rds@meta.data)), collapse = ", "))}
 
-  # 21m와 24m을 제외하고 선택한 연령의 세포만 남긴다.
+  # 18m와 21m을 제외하고 선택한 연령의 세포만 남긴다.
   # 이 필터는 pseudobulk 합산, TMM 정규화, 회귀분석보다 먼저 적용된다.
   selected.cells <- colnames(mmf.rds)[as.character(mmf.rds$age) %in% paste0(age.order, "m")]
   if(length(selected.cells) == 0L){stop("No cells match age.order.")}
@@ -232,7 +232,7 @@ local({
     pb.meta$library_size <- as.numeric(Matrix::colSums(pb.counts))
     pb.meta$eligible <- pb.meta$n_cells >= min.cells.per.mouse.celltype & pb.meta$library_size > 0
     pb.meta$exclusion_reason <- ifelse(pb.meta$library_size <= 0, "zero_library_size", ifelse(pb.meta$n_cells < min.cells.per.mouse.celltype, "below_min_cells", "included"))
-    root <- file.path(output.base, tissue.name, "age_regression_exclude21m24m")
+    root <- file.path(output.base, tissue.name, "age_regression_exclude18m21m")
     dir.create(root, recursive = TRUE, showWarnings = FALSE)
     write.csv(pb.meta, file.path(root, "01.pseudobulk_inventory.csv"), row.names = FALSE, na = "NA")
     if(save.raw.pseudobulk){saveRDS(pb.counts, file.path(root, "02.pseudobulk_raw_counts.RDS"), compress = "gzip")}
@@ -299,12 +299,12 @@ local({
       }
     }
     # 설정, 해석상 주의점, 실행 환경을 함께 저장합니다.
-    settings <- c(paste0("Input RDS (read only): ", rds.file), paste0("Tissue: ", tissue.name), paste0("Tissue metadata column: ", tissue.column), paste0("Include Heart_and_Aorta in Heart: ", include.heart.and.aorta), paste0("Selected analysis ages: ", paste(age.order, collapse = ","), " months"), "21m and 24m excluded before pseudobulk aggregation, TMM normalization and regression.", "No Young/Old grouping. Observations are different mice, not longitudinal repeated measures.", "Pseudobulk: raw UMI sum per tissue-celltype-mouse; technical runs combined.", paste0("Minimum cells per mouse-celltype: ", min.cells.per.mouse.celltype), "Only all-zero genes removed. No CPM/total-UMI gene expression filter.", "TMM is fitted separately for each tissue-celltype using only eligible mice at the selected ages.", "Model: log(mu) = log(effective_library_size) + intercept + beta6 * (age_months - 3)/6", "edgeR v4 glmQLFit(legacy=FALSE, robust=TRUE, prior.count=0); NB dispersion estimated internally.", "All nonzero genes enter the count model; edgeR internally borrows information across genes to estimate variability.", "glmQLFTest tests age_per6 = 0; raw trend p-values shown on plots.", "log2FC_per_6months = beta6/log(2); log2FC_per_month is one sixth of this.", "The slope describes log2 expected relative expression, not the derivative of log2(CPM+1) at every age.", "Curve uses edgeR coefficients and normalized-library offsets; no ordinary lm() fit, R-squared or lm() confidence band.", "Points = log2(TMM-normalized CPM+1); curve = log2(predicted CPM+1).", "Curve spans observed ages only; gaps are model interpolation, including the interval between 18m and 30m.", "BH family: successful Mff celltype tests separately within each tissue.", paste0("BH significance threshold: ", fdr.threshold), "p=NA for no eligible mice, one age, zero residual df, all-zero Mff or a failed model/test. Inspect status/reason and warnings.", "The numeric-age model has two coefficients; residual df differs from a categorical-age model. A previously NA categorical-age result may be testable under the stronger numeric-age assumption.", "At least two observed ages and positive residual df are computational requirements, not guarantees of reliable inference.", "With only two observed ages, the slope summarizes that contrast; it does not establish a trajectory across several ages.", "No adjustment for sex, technical batch or other covariates. Sparse mouse-celltype pseudobulks remain included by default.", "Age-range restriction probes sensitivity; it does not remove all developmental or survivor-selection effects.", "Nonsignificant p-values do not prove absence of an age effect; interpret effect size and mouse-level scatter.", "No paper-specific Young/Old definition is claimed.", "Raw-count aggregation checks: PASSED", "", capture.output(sessionInfo()))
+    settings <- c(paste0("Input RDS (read only): ", rds.file), paste0("Tissue: ", tissue.name), paste0("Tissue metadata column: ", tissue.column), paste0("Include Heart_and_Aorta in Heart: ", include.heart.and.aorta), paste0("Selected analysis ages: ", paste(age.order, collapse = ","), " months"), "18m and 21m excluded before pseudobulk aggregation, TMM normalization and regression.", "No Young/Old grouping. Observations are different mice, not longitudinal repeated measures.", "Pseudobulk: raw UMI sum per tissue-celltype-mouse; technical runs combined.", paste0("Minimum cells per mouse-celltype: ", min.cells.per.mouse.celltype), "Only all-zero genes removed. No CPM/total-UMI gene expression filter.", "TMM is fitted separately for each tissue-celltype using only eligible mice at the selected ages.", "Model: log(mu) = log(effective_library_size) + intercept + beta6 * (age_months - 3)/6", "edgeR v4 glmQLFit(legacy=FALSE, robust=TRUE, prior.count=0); NB dispersion estimated internally.", "All nonzero genes enter the count model; edgeR internally borrows information across genes to estimate variability.", "glmQLFTest tests age_per6 = 0; raw trend p-values shown on plots.", "log2FC_per_6months = beta6/log(2); log2FC_per_month is one sixth of this.", "The slope describes log2 expected relative expression, not the derivative of log2(CPM+1) at every age.", "Curve uses edgeR coefficients and normalized-library offsets; no ordinary lm() fit, R-squared or lm() confidence band.", "Points = log2(TMM-normalized CPM+1); curve = log2(predicted CPM+1).", "Curve spans observed ages only; gaps are model interpolation, including the interval between 24m and 30m.", "BH family: successful Mff celltype tests separately within each tissue.", paste0("BH significance threshold: ", fdr.threshold), "p=NA for no eligible mice, one age, zero residual df, all-zero Mff or a failed model/test. Inspect status/reason and warnings.", "The numeric-age model has two coefficients; residual df differs from a categorical-age model. A previously NA categorical-age result may be testable under the stronger numeric-age assumption.", "At least two observed ages and positive residual df are computational requirements, not guarantees of reliable inference.", "With only two observed ages, the slope summarizes that contrast; it does not establish a trajectory across several ages.", "No adjustment for sex, technical batch or other covariates. Sparse mouse-celltype pseudobulks remain included by default.", "Age-range restriction probes sensitivity; it does not remove all developmental or survivor-selection effects.", "Nonsignificant p-values do not prove absence of an age effect; interpret effect size and mouse-level scatter.", "No paper-specific Young/Old definition is claimed.", "Raw-count aggregation checks: PASSED", "", capture.output(sessionInfo()))
     settings <- c(settings, "", paste0("Plot Y-axis minimum: ", plot.y.min), "Y limits only change the displayed window. Values below the minimum remain in normalization, regression and CSVs.")
     writeLines(settings, file.path(root, "04.analysis_settings_and_sessionInfo.txt"))
     cat("Saved:", root, "\n")
     rm(pb.counts, pb.meta, results, plots)
     invisible(gc())
   }
-  cat("\nDone: both tissues, age regression using 1m, 3m, 18m and 30m only.\n")
+  cat("\nDone: both tissues, age regression using 1m, 3m, 24m and 30m only.\n")
 })
