@@ -1,7 +1,7 @@
 # Aging-MFF: one Mff-score rho heatmap per tissue.
 #
-# Input statistics must be generated after excluding 21m and 24m.
-# Included ages: 1m, 3m, 18m, 30m.
+# Input statistics must be generated after excluding 18m and 21m.
+# Included ages: 1m, 3m, 24m, 30m.
 #
 # Output from one run:
 #   1) Heart.Mff_score_rho_heatmap.png
@@ -14,8 +14,8 @@ run.integrated.mff.score.rho.heatmap <- function() {
   # ==================================================================
   # 1. SETTINGS: adjust analysis choice, fonts, size, and colors here
   # ==================================================================
-  # This folder is produced by the two 21m/24m-excluded score scripts.
-  output.base <- "/BiO/Live/dleogus32/202609Aging_MFF/Analysis/9.genescore.131830"
+  # This folder is produced by both score scripts using ages 1m, 3m, 24m, 30m.
+  output.base <- "/BiO/Live/dleogus32/202609Aging_MFF/Analysis/9.genescore.132430"
   individual.statistics.file <- file.path(output.base, "02.all_statistics.csv")
   net.statistics.file <- file.path(output.base, "CoreScence_net.all_statistics.csv")
   output.dir <- file.path(output.base, "05.Mff_score_rho_heatmap_two_tissues")
@@ -66,7 +66,7 @@ run.integrated.mff.score.rho.heatmap <- function() {
   # 2. LOAD THE FIVE INDIVIDUAL SCORES AND CORESCENCE NET
   # ==================================================================
   missing.files <- c(individual.statistics.file, net.statistics.file)[!file.exists(c(individual.statistics.file, net.statistics.file))]
-  if(length(missing.files)){stop("Run both 21m/24m-excluded score-analysis scripts first. Missing:\n", paste(missing.files, collapse = "\n"))}
+  if(length(missing.files)){stop("Run both score-analysis scripts with ages 1m, 3m, 24m, 30m first. Missing:\n", paste(missing.files, collapse = "\n"))}
 
   individual <- utils::read.csv(individual.statistics.file, stringsAsFactors = FALSE, check.names = FALSE)
   net <- utils::read.csv(net.statistics.file, stringsAsFactors = FALSE, check.names = FALSE)
