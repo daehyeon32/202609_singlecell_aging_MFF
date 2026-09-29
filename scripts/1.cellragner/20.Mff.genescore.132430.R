@@ -1,6 +1,6 @@
 # Aging-MFF: five AddModuleScore signatures, four analysis families.
 # Run this WHOLE file with source() in R / RStudio, or Rscript in the shell.
-# Input RDS is read only; all new outputs go to Analysis/9.genescore.131830/.
+# Input RDS is read only; all new outputs go to Analysis/9.genescore.132430/.
 # RNA data must already contain LogNormalize values. No normalization/PCA rerun.
 # Source references: https://satijalab.org/seurat/reference/addmodulescore
 # https://satijalab.org/seurat/reference/aggregateexpression
@@ -29,10 +29,10 @@ run.aging.mff.genescores <- function() {
   mouse.column <- "mouse.id"
   age.column <- "age"
   include.heart.and.aorta <- TRUE  # Matches the latest supplied Mff script.
-  age.order <- c("1m", "3m", "18m", "30m")
+  age.order <- c("1m", "3m", "24m", "30m")
   young.ages <- c("1m", "3m")
-  old.ages <- c("18m", "30m")
-  excluded.ages <- c("21m", "24m")
+  old.ages <- c("24m", "30m")
+  excluded.ages <- c("18m", "21m")
   make.young.old.plots <- TRUE
   make.age.dotplots <- TRUE
 
@@ -91,7 +91,7 @@ run.aging.mff.genescores <- function() {
   red.when.old.higher <- c("SaulSenMayo", "CoreScence_up")
   # Every cell is plotted and used in statistics; no Mff-positive-only selection.
   age.colors <- c(
-    "1m" = "#1B9E77", "3m" = "#D95F02", "18m" = "#7570B3", "30m" = "#E6AB02"
+    "1m" = "#1B9E77", "3m" = "#D95F02", "24m" = "#7570B3", "30m" = "#E6AB02"
   )
   group.colors <- c(Young = "#1B9E77", Old = "#D95F02")
   gene.files <- c(
@@ -642,7 +642,7 @@ run.aging.mff.genescores <- function() {
   if(include.heart.and.aorta){tissue.keys[tissue.keys %in% "heart_and_aorta"] <- "heart"}
   if(anyNA(tissue.keys) || any(tissue.keys == "")){stop("Missing tissue annotation; inspect metadata.")}
   observed.ages <- as.character(mmf.rds@meta.data[[age.column]])
-  # 21m와 24m은 분석 대상에서 제외한다. 이 선택은 AddModuleScore보다 먼저 적용된다.
+  # 18m와 21m은 분석 대상에서 제외한다. 이 선택은 AddModuleScore보다 먼저 적용된다.
   tissue.selected <- tissue.keys %in% tissue.key(tissues)
   if(
     anyNA(observed.ages[tissue.selected]) ||
